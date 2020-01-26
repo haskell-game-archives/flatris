@@ -1,115 +1,119 @@
-name:                flatris
-version:             0.1.0.0
--- synopsis:            
--- description:         
-license:             GPL-3
-license-file:        LICENSE
-author:              Rodney Lorrimar
-maintainer:          dev@rodney.id.au
--- copyright:           
-category:            Game
-build-type:          Simple
-extra-source-files:  ChangeLog.md
-cabal-version:       >=1.10
+cabal-version:      2.4
+name:               flatris
+version:            0.1.0.0
+license:            GPL-3.0-only
+license-file:       LICENSE
+author:             Rodney Lorrimar
+maintainer:         dev@rodney.id.au
+category:           Game
+build-type:         Simple
+extra-source-files: ChangeLog.md
 
 flag reflex
   description: Build the reflex app
-  default: True
+  default:     True
+
+common common
+  build-depends:
+    , array   ^>=0.5.3
+    , base    ^>=4.12
+    , extra   ^>=1.6.18
+    , lens    ^>=4.17
+    , random  ^>=1.1
+    , text    ^>=1.2.3
+    , time    ^>=1.8
+
+  default-extensions: OverloadedStrings
+  default-language:   Haskell2010
 
 library
-  hs-source-dirs:      src
-  exposed-modules:     Board
-                     , BoardUtil
-                     , BoardDiagram
-                     , Game
-                     , Tango
-  build-depends:       array
-                     , base >=4.9 && <4.10
-                     , diagrams-lib
-                     , diagrams-svg
-                     , extra
-                     , lens
-                     , mtl
-                     , random
-                     , text
-                     , transformers
-                     , time
-                     , colour
-  default-language:    Haskell2010
-  default-extensions:  OverloadedStrings
-                     , TemplateHaskell
-                     , DeriveGeneric
-                     , RecursiveDo
-                     , ScopedTypeVariables
-  ghc-options:       -Wall
-  if impl(ghcjs)
-    ghc-options:       -Wall -dedupe
-    cpp-options:       -DGHCJS_BROWSER
+  import:             common
+  hs-source-dirs:     src
+  exposed-modules:
+    Board
+    BoardDiagram
+    BoardUtil
+    Game
+    Tango
+
+  build-depends:
+    , colour        ^>=2.3.5
+    , diagrams-lib  ^>=1.4.3
+    , diagrams-svg  ^>=1.4.3
+    , mtl           ^>=2.2
+    , transformers  ^>=0.5.6
+
+  default-extensions:
+    DeriveGeneric
+    RecursiveDo
+    ScopedTypeVariables
+    TemplateHaskell
+
+  ghc-options:        -Wall
+
+  if impl(ghcjs -any)
+    ghc-options: -Wall -dedupe
+    cpp-options: -DGHCJS_BROWSER
 
 executable flatris-reflex
+  import:             common
+
   if flag(reflex)
     buildable: True
+
   else
     buildable: False
 
-  hs-source-dirs:      app-reflex
-  main-is:             Main.hs
-  other-modules:       Network
-                     , BoardWidget
-                     , MainWidget
-  build-depends:       array
-                     , base
-                     , containers
-                     , diagrams-lib
-                     , extra
-                     , file-embed
-                     , flatris
-                     , ghcjs-dom
-                     , lens
-                     , mtl
-                     , random
-                     , reflex
-                     , reflex-dom-core
-                     , reflex-dom
-                     , reflex-dom-contrib
-                     , text
-                     , time
-                     , transformers
-                     , colour
-                     , jsaddle
-                     , jsaddle-warp
-                     , warp
-                     , wai-app-static
-                     , websockets
-  default-extensions:  OverloadedStrings
-                     , TemplateHaskell
-                     , RecursiveDo
-                     , ScopedTypeVariables
-  default-language:    Haskell2010
-  ghc-options:       -Wall -threaded -rtsopts -with-rtsopts=-N
-  if impl(ghcjs)
-    ghc-options:       -dedupe
-    cpp-options:       -DGHCJS_BROWSER
+  hs-source-dirs:     app-reflex
+  main-is:            Main.hs
+  other-modules:
+    BoardWidget
+    MainWidget
+    Network
+
+  build-depends:
+    , colour              ^>=2.3.5
+    , containers          ^>=0.6
+    , diagrams-lib        ^>=1.4.3
+    , file-embed          ^>=0.0.11
+    , flatris
+    , ghcjs-dom           ^>=0.9.4
+    , jsaddle             ^>=0.9.7
+    , jsaddle-warp        ^>=0.9.7
+    , mtl                 ^>=2.2
+    , reflex              ^>=0.6.4
+    , reflex-dom          ^>=0.5.3
+    , reflex-dom-contrib  ^>=0.6
+    , reflex-dom-core     ^>=0.5.3
+    , transformers        ^>=0.5.6
+    , wai-app-static      ^>=3.1.7
+    , warp                ^>=3.2
+    , websockets          ^>=0.12.7
+
+  default-extensions:
+    RecursiveDo
+    ScopedTypeVariables
+    TemplateHaskell
+
+  ghc-options:        -Wall -threaded -rtsopts -with-rtsopts=-N
+
+  if impl(ghcjs -any)
+    ghc-options: -dedupe
+    cpp-options: -DGHCJS_BROWSER
 
 test-suite flatris-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Tests.hs
-  build-depends:       HUnit
-                     , QuickCheck
-                     , array
-                     , base
-                     , bytestring
-                     , extra
-                     , flatris
-                     , lens
-                     , quickcheck-instances
-                     , random
-                     , tasty
-                     , tasty-hunit
-                     , tasty-quickcheck
-                     , text
-                     , time
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
-  default-extensions:  OverloadedStrings
+  import:         common
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Tests.hs
+  build-depends:
+    , bytestring            ^>=0.10.8
+    , flatris
+    , HUnit                 ^>=1.6.0
+    , QuickCheck            ^>=2.13.2
+    , quickcheck-instances  ^>=0.3.22
+    , tasty                 ^>=1.2.3
+    , tasty-hunit           ^>=0.10.0
+    , tasty-quickcheck      ^>=0.10.1
+
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N

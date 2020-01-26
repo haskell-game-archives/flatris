@@ -2,3 +2,5 @@ dist/
 dist-ghcjs/
 _shake/
 docs/
+.stack-work
+dist-*
